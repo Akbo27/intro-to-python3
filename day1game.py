@@ -1,3 +1,6 @@
+import pygame
+import sys
+
 class Circle:
     def __init__(self, radius, x, y): 
         self.radius = radius
@@ -23,17 +26,17 @@ if __name__ == "__main__":
     move_y = 1
 
     while game_start:
-        c.move(move_x,move_y)
+        c.move(10,10)
         c.draw()
         counter += 1
         
         if c.x > window_width or c.x < 0:
             move_x = -move_x
 
-        if c.y > window_height or c.y < 0:
+        if c.y == window_height or c.y < 0:
             move_y = -move_y
-        
-        if counter >= 1000:
+
+        if counter >= 100:
             break
 
         
