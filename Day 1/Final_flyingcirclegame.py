@@ -33,9 +33,9 @@ screen = pygame.display.set_mode((window_width, window_height))
 bg_color = (30, 30, 30)
 pygame.display.set_caption("Flying Circles")
 
-N = 100
+N = 10
 circles = []
-for _ in range(N):
+for i in range(N):
     radius = random.randint(5, 15)
     x = random.randint(radius, window_width - radius)
     y = random.randint(radius, window_height - radius)
