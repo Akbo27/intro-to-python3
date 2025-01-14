@@ -1,42 +1,74 @@
 import pygame
 import sys
 
+
 class Circle:
-    def __init__(self, radius, x, y): 
+    def __init__(self, radius, x, y):
         self.radius = radius
         self.x = x
         self.y = y
 
-    def draw(self): 
-        print(f"{self.x}, {self.y}")
-    
+    def draw(self, screen):
+        pygame.draw.circle(screen, self_color, (self.x, self.y), self.radius)
+
     def move(self, shift_x, shift_y):
         self.x += shift_x
         self.y += shift_y
-    
-if __name__ == "__main__":
-    c = Circle(20,100,100)
-    counter = 0
-    game_start = True
 
-    window_width = 100
-    window_height = 100
-    
-    move_x = 1
-    move_y = 1
+c = Circle(10, 100, 100)
+c2 = Circle(5, 10, 100)
+c3 = Circle(5, 10, 100)
 
-    while game_start:
-        c.move(10,10)
-        c.draw()
-        counter += 1
-        
-        if c.x > window_width or c.x < 0:
-            move_x = -move_x
+vx = 4
+vy = 5
 
-        if c.y == window_height or c.y < 0:
-            move_y = -move_y
+vx2 = 3
+vy2 = 3
 
-        if counter >= 100:
+window_width = 500
+window_height = 500
+
+pygame.init()
+
+screen = pygame.display.set_mode((window_width, window_height))
+bg_color = (30, 30, 30)
+self_color = (0, 200, 0)  # green
+pygame.display.set_caption("Flying circle")
+
+clock = pygame.time.Clock()
+running = True
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
             break
 
-        
+    screen.fill(bg_color)
+    c.draw(screen)
+    c.move(vx,vy)
+    c2.draw(screen)
+    c2.move(vx2,vy2)
+
+    c3.draw(screen)
+    c3.move(vx2,vy2)
+
+    if c.x > window_width or c.x < 0:
+        vx = -vx
+
+    if c.y > window_height or c.y < 0:
+        vy = -vy
+
+    if c2.x > window_width or c2.x < 0:
+        vx2 = -vx2
+
+    if c2.y > window_height or c2.y < 0:
+        vy2 = -vy2
+
+    pygame.display.flip()
+    # Keep at 30 FPS or so
+    clock.tick(30)
+
+# Clean up
+pygame.quit()
+sys.exit()
