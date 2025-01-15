@@ -44,7 +44,6 @@ with conn:
 
         if message_received:
             print("Received message: ", message_received)
-            conn.send(("Server summarized: " + message_received[:10] + "\n").encode())
             message = input("Enter a message: ")
             conn.send((message+"\n").encode()) 
         else:

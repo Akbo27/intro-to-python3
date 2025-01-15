@@ -1,7 +1,7 @@
 # Client side
 import socket
 
-HOST = '127.0.0.1'
+HOST = '10.237.23.148'
 PORT = 21002
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -26,10 +26,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 break
 
         if message_received:
-            print("Received message: ", message_received)
-            s.send(("Server summarized: " + message_received[:10] + "\n").encode())
-            message = input("Enter a message: ")
-            s.send((message+"\n").encode()) 
+            print("Received message: ", message_received) 
         else:
             break
 
