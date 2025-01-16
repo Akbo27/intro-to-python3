@@ -6,30 +6,32 @@ PORT = 21002
 
 nickname = input("Choose your nickname: ")
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
-    print("Connected to server")
+# Connecting To Server
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect((HOST, PORT))
 
+# Listening to Server and Sending Nickname
 def receive():
     while True:
         try:
             # Receive Message From Server
             # If 'NICK' Send Nickname
-            message = s.recv(1024).decode('')
+            message = client.recv(1024).decode('ascii')
             if message == 'NICK':
-                s.send(nickname.encode(''))
+                client.send(nickname.encode('ascii'))
             else:
                 print(message)
         except:
+            # Close Connection When Error
             print("An error occured!")
-            s.close()
+            client.close()
             break
 
 # Sending Messages To Server
 def write():
     while True:
         message = '{}: {}'.format(nickname, input(''))
-        s.send(message.encode())
+        client.send(message.encode('ascii'))
 
 # Starting Threads For Listening And Writing
 receive_thread = threading.Thread(target=receive)
