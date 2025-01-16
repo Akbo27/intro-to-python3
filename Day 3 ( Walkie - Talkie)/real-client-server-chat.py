@@ -8,7 +8,7 @@ s = None
 
 # Starting Server
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((host, port))
+server.bind((HOST, PORT))
 server.listen()
 
 # Lists For Clients and Their Nicknames
