@@ -4,11 +4,12 @@ import threading
 HOST = '10.237.23.148'
 PORT = 21002
 
+# Choosing Nickname
 nickname = input("Choose your nickname: ")
 
 # Connecting To Server
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((HOST, PORT))
+client.connect((HOST,PORT))
 
 # Listening to Server and Sending Nickname
 def receive():
@@ -39,3 +40,4 @@ receive_thread.start()
 
 write_thread = threading.Thread(target=write)
 write_thread.start()
+

@@ -1,10 +1,8 @@
 import socket
-import sys
-from pyexpat.errors import messages
+import threading
 
 HOST = '10.237.23.148'
 PORT = 21002
-s = None
 
 # Starting Server
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,9 +14,13 @@ clients = []
 nicknames = []
 
 # Sending Messages To All Connected Clients
-def broadcast(message):
+def broadcast(message, sender=None):
     for client in clients:
-        client.send(message)
+        if client != sender:  # Avoid sending the message back to the sender
+            try:
+                client.send(message)
+            except Exception as e:
+                print(f"Error sending message to a client: {e}")
 
 # Handling Messages From Clients
 def handle(client):
@@ -26,38 +28,64 @@ def handle(client):
         try:
             # Broadcasting Messages
             message = client.recv(1024)
-            broadcast(message)
-        except:
+            if not message:
+                raise ConnectionError("Empty message received; disconnecting client.")
+            broadcast(message, sender=client)
+        except Exception as e:
             # Removing And Closing Clients
-            index = clients.index(client)
-            clients.remove(client)
-            client.close()
-            nickname = nicknames[index]
-            broadcast('{} left!'.format(nickname).encode('ascii'))
-            nicknames.remove(nickname)
+            print(f"Error handling client: {e}")
+            if client in clients:
+                index = clients.index(client)
+                nickname = nicknames[index]
+                broadcast(f"{nickname} left!".encode('ascii'))
+                clients.remove(client)
+                nicknames.remove(nickname)
+                client.close()
             break
 
 # Receiving / Listening Function
 def receive():
     while True:
-        # Accept Connection
-        client, address = server.accept()
-        print("Connected with {}".format(str(address)))
+        try:
+            # Accept Connection
+            client, address = server.accept()
+            print(f"Connected with {address}")
 
-        # Request And Store Nickname
-        client.send('NICK'.encode('ascii'))
-        nickname = client.recv(1024).decode('ascii')
-        nicknames.append(nickname)
-        clients.append(client)
+            # Request And Store Nickname
+            client.send('NICK'.encode('ascii'))
+            nickname = client.recv(1024).decode('ascii').strip()
 
-        # Print And Broadcast Nickname
-        print("Nickname is {}".format(nickname))
-        broadcast("{} joined!".format(nickname).encode('ascii'))
-        client.send('Connected to server!'.encode('ascii'))
+            # Validate nickname
+            if not nickname:
+                client.send("Invalid nickname. Connection closed.".encode('ascii'))
+                client.close()
+                continue
 
-        # Start Handling Thread For Client
-        thread = threading.Thread(target=handle, args=(client,))
-        thread.start()
+            nicknames.append(nickname)
+            clients.append(client)
+
+            # Print And Broadcast Nickname
+            print(f"Nickname is {nickname}")
+            broadcast(f"{nickname} joined!".encode('ascii'))
+            client.send('Connected to server!'.encode('ascii'))
+
+            # Start Handling Thread For Client
+            thread = threading.Thread(target=handle, args=(client,))
+            thread.start()
+
+        except Exception as e:
+            print(f"Error accepting a new client: {e}")
+
+# Run the server
+try:
+    print("Server is running...")
+    receive()
+except KeyboardInterrupt:
+    print("\nShutting down the server...")
+    for client in clients:
+        client.close()
+    server.close()
+    print("Server shut down.")
 
 receive()
 
