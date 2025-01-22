@@ -30,7 +30,7 @@ while running:
     screen.fill((0, 0, 0))
 
     # Plot y = x^2
-    for x in range(-200, 201):  # Scale -2 to 2 to screen pixels
+    for x in range(-200, 201):  
         scaled_x = x / 100  # Scale x back to -2 to 2
         y = f(scaled_x)  # Calculate y = x^2
         screen_x = int(w / 2 + x)  # Center x on the screen
